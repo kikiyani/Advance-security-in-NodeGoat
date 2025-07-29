@@ -16,21 +16,21 @@ const express = require("express");
 const favicon = require("serve-favicon");
 const bodyParser = require("body-parser");
 const session = require("express-session");
-// const csrf = require('csurf');
+const csrf = require('csurf');
 const consolidate = require("consolidate"); // Templating library adapter for Express
 const swig = require("swig");
 const helmet = require("helmet");
 const MongoClient = require("mongodb").MongoClient; // Driver for connecting to MongoDB
 const http = require("http");
 const marked = require("marked");
-//const nosniff = require('dont-sniff-mimetype');
+const nosniff = require('dont-sniff-mimetype');
 const app = express();
 app.use(helmet());
  // Web framework to handle routing requests
 const routes = require("./app/routes");
 const { port, db, cookieSecret } = require("./config/config"); // Application config properties
-/*
-// Fix for A6-Sensitive Data Exposure
+
+
 // Load keys for establishing secure HTTPS connection
 const fs = require("fs");
 const https = require("https");
@@ -39,7 +39,7 @@ const httpsOptions = {
     key: fs.readFileSync(path.resolve(__dirname, "./artifacts/cert/server.key")),
     cert: fs.readFileSync(path.resolve(__dirname, "./artifacts/cert/server.crt"))
 };
-*/
+
 
 MongoClient.connect(db, (err, db) => {
     if (err) {
@@ -49,11 +49,7 @@ MongoClient.connect(db, (err, db) => {
     }
     console.log(`Connected to the database`);
 
-    /*
-    // Fix for A5 - Security MisConfig
-    // TODO: Review the rest of helmet options, like "xssFilter"
-    // Remove default x-powered-by response header
-    app.disable("x-powered-by");
+    
 
     // Prevent opening page in frame or iframe to protect from clickjacking
     app.use(helmet.frameguard()); //xframe deprecated
@@ -67,16 +63,11 @@ MongoClient.connect(db, (err, db) => {
     // Allow communication only on HTTPS
     app.use(helmet.hsts());
 
-    // TODO: Add another vuln: https://github.com/helmetjs/helmet/issues/26
-    // Enable XSS filter in IE (On by default)
-    // app.use(helmet.iexss());
-    // Now it should be used in hit way, but the README alerts that could be
-    // dangerous, like specified in the issue.
-    // app.use(helmet.xssFilter({ setOnOldIE: true }));
+   
 
     // Forces browser to only use the Content-Type set in the response header instead of sniffing or guessing it
     app.use(nosniff());
-    */
+    
 
     // Adding/ remove HTTP Headers for security
     app.use(favicon(__dirname + "/app/assets/favicon.ico"));
@@ -155,17 +146,16 @@ MongoClient.connect(db, (err, db) => {
         */
     });
 
-    // Insecure HTTP connection
+/*    // Insecure HTTP connection
     http.createServer(app).listen(port, () => {
         console.log(`Express http server listening on port ${port}`);
     });
-
-    /*
-    // Fix for A6-Sensitive Data Exposure
+*/
+    
+    
     // Use secure HTTPS protocol
     https.createServer(httpsOptions, app).listen(port, () => {
         console.log(`Express http server listening on port ${port}`);
     });
-    */
-
+    
 });
